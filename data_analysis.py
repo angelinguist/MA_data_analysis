@@ -16,11 +16,11 @@ DATA.loc[DATA['BLOCK'] == 'Block6Proc', 'BLOCK'] = '6'
 DATA.loc[DATA['BLOCK'] == 'Block7Proc', 'BLOCK'] = '7'
 
 #long format data
-uniques = DATA.drop_duplicates(subset='CODE') #leaves the first row of each CODE, basically a long format of our data (or what can be a long format)
+uniques = DATA.drop_duplicates(subset='CODE') #leaves the first row of each CODE, leaving the wide format data
 uniques = uniques.drop(columns=['RT_m','ACCURACY_m','BLOCK']) #drop the rows that need wide format
 
 #just English data
-EN_DATA = DATA.loc[:, ['CODE', 'RT_m', 'ACCURACY_m', 'LG', 'BLOCK']].reset_index(drop=True) #takes only specified columns
+EN_DATA = DATA.loc[:, ['CODE', 'RT_m', 'ACCURACY_m', 'LG', 'BLOCK']].reset_index(drop=True) #takes only specifi`ed columns
 rowstodrop = DATA[DATA['LG'].isin(['GSOIAT_Polish'])].index #choose what to drop
 EN_DATA.drop(index = rowstodrop, inplace=True) #drop it
 
