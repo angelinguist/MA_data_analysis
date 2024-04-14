@@ -15,12 +15,12 @@ DATA.loc[DATA['BLOCK'] == 'Block5Proc', 'BLOCK'] = '5'
 DATA.loc[DATA['BLOCK'] == 'Block6Proc', 'BLOCK'] = '6'
 DATA.loc[DATA['BLOCK'] == 'Block7Proc', 'BLOCK'] = '7'
 
-#long format data
+# separate wide format data
 uniques = DATA.drop_duplicates(subset='CODE') #leaves the first row of each CODE, leaving the wide format data
-uniques = uniques.drop(columns=['RT_m','ACCURACY_m','BLOCK']) #drop the rows that need wide format
+uniques = uniques.drop(columns=['RT_m','ACCURACY_m','BLOCK']) #drop the rows that need long format
 
 #just English data
-EN_DATA = DATA.loc[:, ['CODE', 'RT_m', 'ACCURACY_m', 'LG', 'BLOCK']].reset_index(drop=True) #takes only specifi`ed columns
+EN_DATA = DATA.loc[:, ['CODE', 'RT_m', 'ACCURACY_m', 'LG', 'BLOCK']].reset_index(drop=True) #takes only specified columns
 rowstodrop = DATA[DATA['LG'].isin(['GSOIAT_Polish'])].index #choose what to drop
 EN_DATA.drop(index = rowstodrop, inplace=True) #drop it
 
@@ -55,6 +55,10 @@ LGBT_c_summary = f'LGBT community stats: {LGBT_c}'
 ACC_m = round(DATA['ACCURACY_m'].mean(),2)
 ACC_m_summary = f'accuracy overall M = {ACC_m}'
 
+# SD ACCURACY overall
+ACC_sd = round(DATA['ACCURACY_m'].std(),2)
+ACC_sd_summary = f'accuracy overall SD = {ACC_sd}'
+
 # mean ACCURACY for each block, grouped by language
 ACC_by_block = DATA.groupby(['LG', 'BLOCK'])['ACCURACY_m'].agg(lambda x: round(x.mean(), 2)).reset_index()
 ACC_by_block_summary = f'accuracy by block \n{ACC_by_block}'
@@ -63,8 +67,13 @@ ACC_by_block_summary = f'accuracy by block \n{ACC_by_block}'
 RT_by_block = DATA.groupby(['LG', 'BLOCK'])['RT_m'].agg(lambda x: round(x.mean(), 2)).reset_index() #aggregate function takes each group and performs a func - mean calculation
 RT_by_block_summary = f'reaction time by block \n{RT_by_block}'                                     #also rounds to two places after decimal
 
+# SD for each block, grouped by language
+RT_by_block_sd = DATA.groupby(['LG', 'BLOCK'])['RT_m'].agg(lambda x: round(x.std(), 2)).reset_index()
+RT_by_block_sd.rename(columns={"RT_m": "RT_sd"}, inplace=True)
+RT_by_block_sd_summary = f'reaction time by block SD \n{RT_by_block_sd}'  
+
 # generate a simple report
-reports = [AGE_m_summary,AGE_sd_summary,LEXTALE_m_summary,LEXTALE_sd_summary,LGBT_c_summary,ACC_m_summary,ACC_by_block_summary,RT_by_block_summary]
+reports = [AGE_m_summary,AGE_sd_summary,LEXTALE_m_summary,LEXTALE_sd_summary,LGBT_c_summary,ACC_m_summary, ACC_sd_summary, ACC_by_block_summary, RT_by_block_summary, RT_by_block_sd_summary]
 
 with open('report_statistics.txt', 'w') as f:
     for r in reports:
